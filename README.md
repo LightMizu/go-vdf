@@ -1,8 +1,8 @@
 # go-vdf
 
-[![Build Workflow](https://github.com/lewisgibson/go-vdf/actions/workflows/build.yaml/badge.svg)](https://github.com/lewisgibson/go-vdf/actions/workflows/build.yaml)
+[![Build Workflow](https://github.com/lightmizu/go-vdf/actions/workflows/build.yaml/badge.svg)](https://github.com/lightmizu/go-vdf/actions/workflows/build.yaml)
 [![codecov](https://codecov.io/gh/lewisgibson/go-vdf/graph/badge.svg?token=dgmOUQIoI0)](https://codecov.io/gh/lewisgibson/go-vdf)
-[![Pkg Go Dev](https://pkg.go.dev/badge/github.com/lewisgibson/go-vdf)](https://pkg.go.dev/github.com/lewisgibson/go-vdf)
+[![Pkg Go Dev](https://pkg.go.dev/badge/github.com/lightmizu/go-vdf)](https://pkg.go.dev/github.com/lightmizu/go-vdf)
 
 A high-performance parser and encoder for the [VDF (Valve Data Format)](https://developer.valvesoftware.com/wiki/KeyValues) in Go. VDF is commonly used in Valve games like Counter-Strike, Dota 2, and Team Fortress 2 for configuration files, item definitions, and game data.
 
@@ -24,14 +24,14 @@ A high-performance parser and encoder for the [VDF (Valve Data Format)](https://
 
 ## Resources
 
-- [Discussions](https://github.com/lewisgibson/go-vdf/discussions)
-- [Reference](https://pkg.go.dev/github.com/lewisgibson/go-vdf)
-- [Examples](https://pkg.go.dev/github.com/lewisgibson/go-vdf#pkg-examples)
+- [Discussions](https://github.com/lightmizu/go-vdf/discussions)
+- [Reference](https://pkg.go.dev/github.com/lightmizu/go-vdf)
+- [Examples](https://pkg.go.dev/github.com/lightmizu/go-vdf#pkg-examples)
 
 ## Installation
 
 ```sh
-go get github.com/lewisgibson/go-vdf
+go get github.com/lightmizu/go-vdf
 ```
 
 ## Quickstart
@@ -45,7 +45,7 @@ import (
 	"fmt"
 	"log"
 
-	govdf "github.com/lewisgibson/go-vdf"
+	govdf "github.com/lightmizu/go-vdf"
 )
 
 func main() {

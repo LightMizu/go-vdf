@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lewisgibson/go-vdf/internal"
+	"github.com/lightmizu/go-vdf/internal"
 	"github.com/stretchr/testify/require"
 )
 

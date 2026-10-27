@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lewisgibson/go-vdf/internal"
+	"github.com/lightmizu/go-vdf/internal"
 )
 
 // bufferPool is a type-safe pool of bytes.Buffer for reuse in Marshal.

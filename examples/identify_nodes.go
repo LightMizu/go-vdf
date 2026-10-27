@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	govdf "github.com/lewisgibson/go-vdf"
+	govdf "github.com/lightmizu/go-vdf"
 )
 
 func main() {

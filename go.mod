@@ -1,4 +1,4 @@
-module github.com/lewisgibson/go-vdf
+module github.com/lightmizu/go-vdf
 
 go 1.26.1
 

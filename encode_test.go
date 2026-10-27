@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	govdf "github.com/lewisgibson/go-vdf"
+	govdf "github.com/lightmizu/go-vdf"
 	"github.com/stretchr/testify/require"
 )
 

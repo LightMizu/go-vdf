@@ -3,7 +3,7 @@ package govdf_test
 import (
 	"testing"
 
-	govdf "github.com/lewisgibson/go-vdf"
+	govdf "github.com/lightmizu/go-vdf"
 	"github.com/stretchr/testify/require"
 )
 
