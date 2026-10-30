@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"sort"
 	"strconv"
 
 	"github.com/lightmizu/go-vdf/internal"
@@ -96,37 +95,27 @@ func (e *BinaryEncoder) encodeRoot(node *Node) error {
 
 // encodeObject writes a map Node's children as binary VDF fields.
 func (e *BinaryEncoder) encodeObject(node *Node) error {
-	// Get sorted keys for deterministic output
-	var keys = make([]string, 0, len(node.Children))
-	for key := range node.Children {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	// Write each key-value pair
-	for _, key := range keys {
-		children := node.Children[key]
-		for _, child := range children {
-			if child == nil {
-				continue
+	for _, entry := range node.orderedChildren() {
+		key, child := entry.key, entry.child
+		if child == nil {
+			continue
+		}
+		switch child.Type {
+		case NodeTypeMap:
+			if err := e.writeObjectTag(key); err != nil {
+				return err
 			}
-			switch child.Type {
-			case NodeTypeMap:
-				if err := e.writeObjectTag(key); err != nil {
-					return err
-				}
-				if err := e.encodeObject(child); err != nil {
-					return err
-				}
-
-			case NodeTypeScalar:
-				if err := e.writeScalar(key, child.Value); err != nil {
-					return err
-				}
-
-			default:
-				return fmt.Errorf("unknown node type: %d", child.Type)
+			if err := e.encodeObject(child); err != nil {
+				return err
 			}
+
+		case NodeTypeScalar:
+			if err := e.writeScalar(key, child.Value); err != nil {
+				return err
+			}
+
+		default:
+			return fmt.Errorf("unknown node type: %d", child.Type)
 		}
 	}
 

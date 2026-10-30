@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sort"
 )
 
 // NodeType represents the type of a VDF node.
@@ -47,6 +48,11 @@ type Node struct {
 	// This field is nil for NodeTypeScalar nodes.
 	Children map[string][]*Node
 
+	// Order records child keys in document order, including repeated keys.
+	// Keys missing from Order are encoded afterward in alphabetical order.
+	// Children remains the source of child values.
+	Order []string
+
 	// HeadComment contains any comment that appears before this node.
 	// Comments are preserved during parsing and included in output.
 	HeadComment string
@@ -61,12 +67,45 @@ type Node struct {
 	Column int
 }
 
-// appendChild records a child while retaining the historical last-value lookup.
+// appendChild records a child and its position in document order.
 func appendChild(parent *Node, key string, child *Node) {
 	if parent.Children == nil {
 		parent.Children = make(map[string][]*Node)
 	}
 	parent.Children[key] = append(parent.Children[key], child)
+	parent.Order = append(parent.Order, key)
+}
+
+// orderedChildren visits current children in recorded order. Removed occurrences
+// are ignored; new occurrences without order metadata follow in sorted key order.
+func (n *Node) orderedChildren() []struct {
+	key   string
+	child *Node
+} {
+	type entry = struct {
+		key   string
+		child *Node
+	}
+	entries := make([]entry, 0)
+	used := make(map[string]int, len(n.Children))
+	for _, key := range n.Order {
+		index := used[key]
+		if index < len(n.Children[key]) {
+			entries = append(entries, entry{key, n.Children[key][index]})
+			used[key]++
+		}
+	}
+	keys := make([]string, 0, len(n.Children))
+	for key := range n.Children {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		for _, child := range n.Children[key][used[key]:] {
+			entries = append(entries, entry{key, child})
+		}
+	}
+	return entries
 }
 
 // MarshalJSON returns the JSON encoding of the node.

@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	govdf "github.com/lightmizu/go-vdf"
 	"github.com/stretchr/testify/require"
 )
@@ -363,7 +364,7 @@ func TestDecode_Node(t *testing.T) {
 			node := govdf.Node{}
 			require.NoErrorf(t, govdf.Unmarshal([]byte(tc.input), &node), "output: %s", node)
 
-			if diff := cmp.Diff(tc.expectedNode, node); diff != "" {
+			if diff := cmp.Diff(tc.expectedNode, node, cmpopts.IgnoreFields(govdf.Node{}, "Order")); diff != "" {
 				t.Errorf("unexpected node (-want +got):\n%s", diff)
 			}
 		})
@@ -882,7 +883,7 @@ func TestDecode_EdgeCases(t *testing.T) {
 			node := govdf.Node{}
 			require.NoError(t, govdf.Unmarshal([]byte(tc.input), &node))
 
-			if diff := cmp.Diff(tc.expectedNode, node); diff != "" {
+			if diff := cmp.Diff(tc.expectedNode, node, cmpopts.IgnoreFields(govdf.Node{}, "Order")); diff != "" {
 				t.Errorf("unexpected node (-want +got):\n%s", diff)
 			}
 		})

@@ -120,6 +120,20 @@ if err != nil {
 fmt.Println(string(vdfBytes))
 ```
 
+### Preserving field order
+
+Text and binary VDF decoding record each child key in `Node.Order`, including
+repeated keys. Encoding a decoded `Node` preserves that order at every level.
+`Children` remains the source of values, so existing lookups and value edits work
+as before. Structs are encoded in field declaration order.
+
+For manually created nodes, set `Order: []string{"z", "a", "z"}` to specify
+an order. Children without an entry in `Order` are appended in alphabetical key
+order; entries for removed children are ignored. A plain Go map or decoding into
+a struct cannot retain the original document order; use `Node` for round trips.
+JSON conversion retains its existing object/array representation and does not
+preserve VDF ordering between repeated keys.
+
 ### Binary VDF
 
 ```go

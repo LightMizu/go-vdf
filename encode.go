@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"reflect"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -141,76 +140,63 @@ func (e *Encoder) encodeMap(node *Node, indent int) error {
 		return nil
 	}
 
-	// Get sorted keys for deterministic output
-	var keys = make([]string, 0, len(node.Children))
-	for key := range node.Children {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	// Write each key-value pair
-	for _, key := range keys {
-		children := node.Children[key]
-		if len(children) == 0 {
+	for _, entry := range node.orderedChildren() {
+		key, child := entry.key, entry.child
+		if child == nil {
 			continue
 		}
-		for _, child := range children {
-			if child == nil {
-				continue
-			}
 
-			// Write head comment if present for this child
-			if child.HeadComment != "" {
-				if err := e.writeHeadComment(child.HeadComment, indent); err != nil {
-					return err
-				}
+		// Write head comment if present for this child
+		if child.HeadComment != "" {
+			if err := e.writeHeadComment(child.HeadComment, indent); err != nil {
+				return err
 			}
+		}
 
-			// Write the key
+		// Write the key
+		if err := e.writeIndent(indent); err != nil {
+			return err
+		}
+		if err := e.writeQuotedString(key); err != nil {
+			return err
+		}
+
+		// Write the value based on its type
+		switch child.Type {
+		case NodeTypeMap:
+			// Write opening brace
+			if _, err := e.w.Write([]byte(" {\n")); err != nil {
+				return err
+			}
+			// Write map contents
+			if err := e.encodeMap(child, indent+1); err != nil {
+				return err
+			}
+			// Write closing brace
 			if err := e.writeIndent(indent); err != nil {
 				return err
 			}
-			if err := e.writeQuotedString(key); err != nil {
+			if _, err := e.w.Write([]byte("}\n")); err != nil {
 				return err
 			}
 
-			// Write the value based on its type
-			switch child.Type {
-			case NodeTypeMap:
-				// Write opening brace
-				if _, err := e.w.Write([]byte(" {\n")); err != nil {
+		case NodeTypeScalar:
+			// Write space before value
+			if _, err := e.w.Write([]byte(" ")); err != nil {
+				return err
+			}
+			// Write scalar value
+			if err := e.writeQuotedString(child.Value); err != nil {
+				return err
+			}
+			// Write line comment if present
+			if child.LineComment != "" {
+				if _, err := e.w.Write([]byte("\t// " + child.LineComment)); err != nil {
 					return err
 				}
-				// Write map contents
-				if err := e.encodeMap(child, indent+1); err != nil {
-					return err
-				}
-				// Write closing brace
-				if err := e.writeIndent(indent); err != nil {
-					return err
-				}
-				if _, err := e.w.Write([]byte("}\n")); err != nil {
-					return err
-				}
-
-			case NodeTypeScalar:
-				// Write space before value
-				if _, err := e.w.Write([]byte(" ")); err != nil {
-					return err
-				}
-				// Write scalar value
-				if err := e.writeQuotedString(child.Value); err != nil {
-					return err
-				}
-				// Write line comment if present
-				if child.LineComment != "" {
-					if _, err := e.w.Write([]byte("\t// " + child.LineComment)); err != nil {
-						return err
-					}
-				}
-				if _, err := e.w.Write([]byte("\n")); err != nil {
-					return err
-				}
+			}
+			if _, err := e.w.Write([]byte("\n")); err != nil {
+				return err
 			}
 		}
 	}
@@ -349,22 +335,18 @@ func structToNode(v any) (*Node, error) {
 			return nil, err
 
 		case childNode != nil:
-			node.Children = ensureChildren(node.Children)
-			node.Children[fieldName] = []*Node{childNode}
 			if val.Field(i).Kind() == reflect.Slice || val.Field(i).Kind() == reflect.Array {
-				node.Children[fieldName] = nil
 				for j := 0; j < val.Field(i).Len(); j++ {
-					n, e := valueToNode(val.Field(i).Index(j))
-					if e != nil {
-						return nil, e
+					n, err := valueToNode(val.Field(i).Index(j))
+					if err != nil {
+						return nil, err
 					}
 					if n != nil {
-						node.Children[fieldName] = append(node.Children[fieldName], n)
+						appendChild(node, fieldName, n)
 					}
 				}
-				if len(node.Children[fieldName]) > 0 {
-					// first occurrence remains available through index zero
-				}
+			} else {
+				appendChild(node, fieldName, childNode)
 			}
 		}
 	}

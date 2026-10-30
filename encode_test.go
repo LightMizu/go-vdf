@@ -126,8 +126,8 @@ func TestEncode_Struct(t *testing.T) {
 				}
 			},
 			expected: strings.Join([]string{
-				`"age" "30"`,
 				`"name" "John"`,
+				`"age" "30"`,
 			}, "\n"),
 		},
 		"nested struct": {
@@ -148,8 +148,8 @@ func TestEncode_Struct(t *testing.T) {
 			},
 			expected: strings.Join([]string{
 				`"user" {`,
-				`    "age" "30"`,
 				`    "name" "John"`,
+				`    "age" "30"`,
 				`}`,
 			}, "\n"),
 		},
@@ -169,10 +169,10 @@ func TestEncode_Struct(t *testing.T) {
 				}
 			},
 			expected: strings.Join([]string{
+				`"string_field" "hello world"`,
+				`"int_field" "42"`,
 				`"bool_field" "true"`,
 				`"float_field" "3.14159"`,
-				`"int_field" "42"`,
-				`"string_field" "hello world"`,
 			}, "\n"),
 		},
 		"optional pointer structs": {
@@ -193,13 +193,13 @@ func TestEncode_Struct(t *testing.T) {
 				}
 			},
 			expected: strings.Join([]string{
-				`"optional" {`,
-				`    "age" "25"`,
-				`    "name" "Jane"`,
-				`}`,
 				`"required" {`,
-				`    "age" "30"`,
 				`    "name" "John"`,
+				`    "age" "30"`,
+				`}`,
+				`"optional" {`,
+				`    "name" "Jane"`,
+				`    "age" "25"`,
 				`}`,
 			}, "\n"),
 		},
@@ -798,17 +798,17 @@ world"`,
 				}
 			},
 			expected: strings.Join([]string{
-				`"bool" "true"`,
-				`"float32" "3.140000104904175"`,
-				`"float64" "3.14159265359"`,
+				`"int8" "127"`,
 				`"int16" "32767"`,
 				`"int32" "2147483647"`,
 				`"int64" "9223372036854775807"`,
-				`"int8" "127"`,
+				`"uint8" "255"`,
 				`"uint16" "65535"`,
 				`"uint32" "4294967295"`,
 				`"uint64" "18446744073709551615"`,
-				`"uint8" "255"`,
+				`"float32" "3.140000104904175"`,
+				`"float64" "3.14159265359"`,
+				`"bool" "true"`,
 			}, "\n"),
 		},
 		"pointer to struct": {
@@ -854,8 +854,8 @@ world"`,
 				}
 			},
 			expected: strings.Join([]string{
-				`"hidden" "hidden"`,
 				`"visible" "visible"`,
+				`"hidden" "hidden"`,
 			}, "\n"),
 		},
 		"custom marshaler": {
@@ -883,10 +883,10 @@ world"`,
 			},
 			expected: strings.Join([]string{
 				`"uint" "42"`,
+				`"uint8" "255"`,
 				`"uint16" "65535"`,
 				`"uint32" "4294967295"`,
 				`"uint64" "18446744073709551615"`,
-				`"uint8" "255"`,
 			}, "\n"),
 		},
 		"int types": {
@@ -908,10 +908,10 @@ world"`,
 			},
 			expected: strings.Join([]string{
 				`"int" "-1"`,
+				`"int8" "-128"`,
 				`"int16" "-32768"`,
 				`"int32" "-2147483648"`,
 				`"int64" "-9223372036854775808"`,
-				`"int8" "-128"`,
 			}, "\n"),
 		},
 		"float types": {
@@ -942,8 +942,8 @@ world"`,
 				}
 			},
 			expected: strings.Join([]string{
-				`"false_field" "false"`,
 				`"true_field" "true"`,
+				`"false_field" "false"`,
 			}, "\n"),
 		},
 	}
